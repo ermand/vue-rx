@@ -40,6 +40,7 @@ export default {
       .map(id => `https://starwars.egghead.training/people/${id}`)
       .switchMap(cachePerson(cache))
       .catch(err => {
+        // eslint-disable-next-line
         console.log('error:', err);
         createLoader('https://starwars.egghead.training/people/2');
       })
