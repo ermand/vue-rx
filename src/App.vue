@@ -5,12 +5,12 @@
       <b-tab-item v-for="person of people$" :key="person.id" :label="person.name"></b-tab-item>
     </b-tabs>
     <h1 class="title">{{ name$ }}</h1>
-    <img v-stream:error="imageError$" :src="image$" alt="">
+    <img v-stream:error="imageError$" :src="image$" alt>
   </section>
 </template>
 
 <script>
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
 
 export default {
   data() {
@@ -18,30 +18,30 @@ export default {
       activeTab: 0
     };
   },
-  domStreams: ['click$', 'imageError$'],
+  domStreams: ["click$", "imageError$"],
   subscriptions() {
     const cache = {};
     const cachePerson = cache => url => {
       return cache[url] ? cache[url] : (cache[url] = createLoader(url));
     };
     const createLoader = url =>
-      Observable.from(this.$http.get(url)).pluck('data');
+      Observable.from(this.$http.get(url)).pluck("data");
 
     const people$ = createLoader(
-      'https://starwars.egghead.training/people'
+      "https://starwars.egghead.training/people"
     ).map(people => people.slice(0, 7));
 
-    const activeTab$ = this.$watchAsObservable('activeTab', {
+    const activeTab$ = this.$watchAsObservable("activeTab", {
       immediate: true
-    }).pluck('newValue');
+    }).pluck("newValue");
 
     const luke$ = activeTab$
       .combineLatest(people$, (tabId, people) => people[tabId].id)
       .map(id => `https://starwars.egghead.training/people/${id}`)
       .switchMap(cachePerson(cache))
       .catch(err => {
-        console.log('error:', err);
-        createLoader('https://starwars.egghead.training/people/2');
+        console.log("error:", err); //eslint-disable-line
+        createLoader("https://starwars.egghead.training/people/2");
       })
       .share();
 
@@ -50,11 +50,11 @@ export default {
       luke$.mapTo(false)
     ).startWith(false);
 
-    const buttonText$ = disabled$.map(bool => (bool ? 'Loading..' : 'Load'));
+    const buttonText$ = disabled$.map(bool => (bool ? "Loading.." : "Load"));
 
-    const name$ = luke$.pluck('name');
+    const name$ = luke$.pluck("name");
     const loadImage$ = luke$
-      .pluck('image')
+      .pluck("image")
       .map(image => `https://starwars.egghead.training/${image}`);
 
     const failImage$ = this.imageError$.mapTo(
